@@ -1,11 +1,11 @@
 public with sharing class AntiSOQLInjection {
     
     public static String escapeSpecialCharacters(String userInput){   
-        String specialChars = '%_\\';
+        String specialChars = '%_\\'; // first '\' escapes the second so that result is '%_\'
         String escapedUserInput = '';
         String nextChar;
         if(userInput.containsNone(specialChars)){
-            System.debug('No special chars found in userInput');
+            System.debug('No special chars found in userInput: ' + userInput);
             return userInput;
         } else {
             for(Integer i=0;i<userInput.length();i++){
@@ -18,7 +18,8 @@ public with sharing class AntiSOQLInjection {
                     escapedUserInput += nextChar;
                 }
             }
-        return escapedUserInput;                       
+            System.debug('escapedUserInput: ' + escapedUserInput);
+            return escapedUserInput;                       
         }   
     }
 }

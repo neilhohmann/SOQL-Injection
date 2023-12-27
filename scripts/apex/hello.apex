@@ -12,16 +12,16 @@
 //String userInput = '%\\_man';
 //userInput = '%' + userInput + '%';
 
-String userInput = 'Young\\_man';
+String userInput = 'pete_r';
 System.debug('userInput: ' + userInput); // logs 'Young\_man' when userInput = 'Young\\_man' — first '\' escapes second '\'
 
-// String result = AntiSOQLInjection.escapeSpecialCharacters(userInput);
-// String userInputEscaped = result;
+String result = AntiSOQLInjection.escapeSpecialCharacters(userInput);
+String userInputEscaped = result;
 // System.debug('userInput escaped: ' + userInputEscaped); //when userInput = 'Young_man' returns 'Young\_man' even though '\\' added
 // String userInputEscapedLeadingWild = '%' + userInputEscaped;
 // System.debug('userInputEscapedLeadingWild: ' + userInputEscapedLeadingWild);
 
-List<Contact> staticContacts = [SELECT Name FROM Contact WHERE LastName LIKE :userInput];
+List<Contact> staticContacts = [SELECT Name FROM Contact WHERE LastName LIKE :userInputEscaped];
 System.debug('static SOQL results: ' + staticContacts);
 // System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 // List<Contact> dynamicContacts = Database.query('SELECT Name FROM Contact WHERE Lastname LIKE \'%' + userInput + '%\'');
