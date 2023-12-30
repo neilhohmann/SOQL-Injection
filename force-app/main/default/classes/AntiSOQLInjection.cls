@@ -1,8 +1,9 @@
 public with sharing class AntiSOQLInjection {
-
+    // This class is used for Apex examples of SOQL injection
+    // Another class is used to demonstrate @invocable methods in flow
     public static void findUnescapedContacts(String userInput){
         System.debug('User input: ' + userInput); // represents search term for Contact LastName (in WHERE clause)
-        List<Contact> results = [SELECT Name FROM Contact WHERE LastName LIKE :userInput];
+        List<Contact> results = [SELECT Name, Phone FROM Contact WHERE LastName LIKE :userInput];
         if(results.isEmpty()){
             System.debug('No exact matches found with original, unescaped input.');
         } else {
