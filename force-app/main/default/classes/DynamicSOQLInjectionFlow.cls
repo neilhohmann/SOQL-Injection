@@ -5,7 +5,7 @@ public with sharing class DynamicSOQLInjectionFlow {
     public static List<SOQLInjectionFlowResult> findUnescapedContacts(List<SOQLInjectionFlowRequest> requests){
         String searchTerm = requests[0].userInput;
         System.debug('search term: ' + searchTerm); // represents search term for Contact LastName (in WHERE clause)
-        List<Contact> contacts = Database.query('SELECT Name, Phone FROM Contact WHERE LastName LIKE \'%' + searchTerm + '%\' ORDER BY LastName');
+        List<Contact> contacts = Database.query('SELECT Name, Email FROM Contact WHERE LastName LIKE \'%' + searchTerm + '%\' ORDER BY LastName');
         if(contacts.isEmpty()){
             System.debug('No exact matches found.');
         } else {
