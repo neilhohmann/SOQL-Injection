@@ -1,10 +1,9 @@
 @isTest
-public with sharing class SOQLInjectionFlow_Test {
+private class SOQLInjectionFlow_Test {
 
-    @isTest
-    public static void testSOQLResults(){
-
-        // Create 5 Contacts with similar last names 
+    @testSetup 
+    static void setupData() {
+        // Create 5 Contacts with similar last names (eg, Barr, Carr, Farr, etc.)
         List<Contact> consToInsert = new List<Contact>();
         String lastName = 'arr';
         List<String> startingLetterLastName = new List<String>{'B', 'C', 'F', 'P', 'T'};
@@ -16,10 +15,36 @@ public with sharing class SOQLInjectionFlow_Test {
             consToInsert.add(con);
         }
         insert consToInsert;
-
-        List<String> userInputList = new List<String>{'Tarr'};
-        List<Contacts> cons = SOQLInjectionFlow.findUnescapedContacts(userInputList);
-        Assert.areEqual(1, userInputList.size());
     }
-    
+
+    @isTest
+    static void testExpectedUserInput(){
+        // Test for expected search of LastName (eg, 'Tarr')
+        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
+        request.userInput = 'Tarr';
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        
+        Assert.areEqual(1, cons.size());
+        Assert.areEqual(cons[0].Name, 'Jane Tarr');
+    }
+
+    @isTest 
+    static void testSOQLInjectionWildcard(){
+        // Tests if % wildcard will return results
+        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
+        request.userInput = '%';
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        
+        Assert.areEqual(5, cons.size());
+    }
+
+    @isTest 
+    static void testSOQLInjectionSingleQuote(){
+        // Tests if SOQL phrase with single quotes will return results
+        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
+        request.userInput = 'test\' OR LastName LIKE \'%\'';
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        
+        Assert.areEqual(0, cons.size());
+    }
 }
