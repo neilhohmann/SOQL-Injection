@@ -17,33 +17,34 @@ private class SOQLInjectionFlow_Test {
         insert consToInsert;
     }
 
+    // The following tests are performed on this SOQL query:
+    // [SELECT Name, Phone FROM Contact WHERE LastName LIKE :searchTerm ORDER BY LastName]
+
     @isTest
     static void testExpectedUserInput(){
         // Test for expected search of LastName (eg, 'Tarr')
-        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
-        request.userInput = 'Tarr';
-        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        // Expected to return one contact
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<String>{'Tarr'})[0]; // the index on the end returns the first (and only) list
         
         Assert.areEqual(1, cons.size());
-        Assert.areEqual(cons[0].Name, 'Jane Tarr');
+        Assert.areEqual('Jane Tarr', cons[0].Name);
     }
 
     @isTest 
     static void testSOQLInjectionWildcard(){
         // Tests if % wildcard will return results
-        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
-        request.userInput = '%';
-        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        // Expected to return ALL contacts since LIKE keyword used
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<String>{'%'})[0];
         
         Assert.areEqual(5, cons.size());
+        Assert.areEqual('Jane Barr', cons[0].Name);
     }
 
     @isTest 
     static void testSOQLInjectionSingleQuote(){
         // Tests if SOQL phrase with single quotes will return results
-        SOQLInjectionFlow.SOQLInjectionFlowRequest request = new SOQLInjectionFlow.SOQLInjectionFlowRequest();
-        request.userInput = 'test\' OR LastName LIKE \'%\'';
-        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<SOQLInjectionFlow.SOQLInjectionFlowRequest>{request})[0].results;
+        // Expected to return NO contacts since a bind variable escapes single quotes
+        List<Contact> cons = SOQLInjectionFlow.findUnescapedContacts(new List<String>{'test\' OR LastName LIKE \'%'})[0];
         
         Assert.areEqual(0, cons.size());
     }
