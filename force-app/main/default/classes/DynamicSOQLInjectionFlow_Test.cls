@@ -1,4 +1,5 @@
-public with sharing class DynamicSOQLInjectionFlow_Test {
+@isTest
+private class DynamicSOQLInjectionFlow_Test {
     @testSetup 
     static void setupData() {
         // Create 5 Contacts with similar last names (eg, Barr, Carr, Farr, etc.)
