@@ -8,8 +8,8 @@ public with sharing class DynamicSOQLwDoubleEscape {
         String wildChars = '%_\''; // characters to escape; includes single quote
         String escapedSearchTerm = '';
         if(searchTerm.containsAny(wildChars)){ // if searchTerm contains wildcard chars, escape them
-            for(Integer i=0; i<searchTerm.size(); i++){
-                nextChar = searchTerm.substring(i, i+1);
+            for(Integer i=0; i<searchTerm.length(); i++){
+                String nextChar = searchTerm.substring(i, i+1);
                 if(nextChar.containsAny(wildChars)){
                     escapedSearchTerm += '\\'; // first '\' escapes second '\'
                 }
